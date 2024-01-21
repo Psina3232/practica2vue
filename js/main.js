@@ -8,8 +8,8 @@ const storageModule = {
       localStorage.setItem(this.storageKey, JSON.stringify(data));
     }
   };
-
-Vue.component('card', {
+  
+  Vue.component('card', {
     props: ['cardData', 'disableEdit'],
     methods: {
       updateProgress() {
@@ -41,6 +41,7 @@ Vue.component('card', {
       </div>
     `
   });
+  
   new Vue({
     el: '#app',
     data: {
@@ -65,39 +66,72 @@ Vue.component('card', {
         },
         deep: true
       }
-    }, 
+    },
     methods: {
-        ...storageModule,
-          deleteGroup(groupId) {
-            const indexFirst = this.firstColumn.findIndex(group => group.id === groupId);
-            const indexSecond = this.secondColumn.findIndex(group => group.id === groupId);
-            const indexThird = this.thirdColumn.findIndex(group => group.id === groupId);
-    
-            if (indexFirst !== -1) {
-              this.firstColumn.splice(indexFirst, 1);
-            } else if (indexSecond !== -1) {
-              this.secondColumn.splice(indexSecond, 1);
-            } else if (indexThird !== -1) {
-              this.thirdColumn.splice(indexThird, 1);
-            }
-          },
-        moveColumn(fromColumn, toColumn, progressThreshold, maxToColumnLength) {
-          fromColumn.forEach(card => {
-            const progress = (card.items.filter(item => item.checked).length / card.items.length) * 100;
-            if (progress >= progressThreshold && toColumn.length < maxToColumnLength) {
-              toColumn.push(card);
-              fromColumn.splice(fromColumn.indexOf(card), 1);
-            }
-          });
-        }, loadData() {
-            const data = this.getData();
-            this.firstColumn = data.firstColumn;
-            this.secondColumn = data.secondColumn;
-            this.thirdColumn = data.thirdColumn;
-          },
+      ...storageModule,
+        deleteGroup(groupId) {
+          const indexFirst = this.firstColumn.findIndex(group => group.id === groupId);
+          const indexSecond = this.secondColumn.findIndex(group => group.id === groupId);
+          const indexThird = this.thirdColumn.findIndex(group => group.id === groupId);
+  
+          if (indexFirst !== -1) {
+            this.firstColumn.splice(indexFirst, 1);
+          } else if (indexSecond !== -1) {
+            this.secondColumn.splice(indexSecond, 1);
+          } else if (indexThird !== -1) {
+            this.thirdColumn.splice(indexThird, 1);
+          }
         },
-        mounted() {
-          this.loadData();
-          this.checkMoveCard();
+      moveColumn(fromColumn, toColumn, progressThreshold, maxToColumnLength) {
+        fromColumn.forEach(card => {
+          const progress = (card.items.filter(item => item.checked).length / card.items.length) * 100;
+          if (progress >= progressThreshold && toColumn.length < maxToColumnLength) {
+            toColumn.push(card);
+            fromColumn.splice(fromColumn.indexOf(card), 1);
+          }
+        });
+      },
+      MoveFirstColm() {
+        if (this.secondColumn.length === 5 && this.firstColumn.some(card => {
+          const progress = (card.items.filter(item => item.checked).length / card.items.length) * 100;
+          return progress > 50;
+        })) {
+          this.isFirstColumnBlocked = true;
+        } else {
+          this.isFirstColumnBlocked = false;
+          this.moveColumn(this.firstColumn, this.secondColumn, 50, 5);
         }
-      });
+      },
+      MoveSecondColm() {
+        this.moveColumn(this.secondColumn, this.thirdColumn, 100, Infinity);
+        this.MoveFirstColm();
+      },
+      checkMoveCard() {
+        this.MoveFirstColm();
+        this.MoveSecondColm();
+      },
+      addCard() {
+        if (this.firstColumn.length < 3 && !this.isFirstColumnBlocked) {
+          this.firstColumn.push({ id: Date.now(), groupName: this.groupName, items: this.inputs.map(text => ({ text, checked: false })) });
+        }
+        this.groupName = null;
+        this.inputs = [null, null, null, null, null];
+        this.checkMoveCard();
+        this.saveData({
+          firstColumn: this.firstColumn,
+          secondColumn: this.secondColumn,
+          thirdColumn: this.thirdColumn
+        });
+      },
+      loadData() {
+        const data = this.getData();
+        this.firstColumn = data.firstColumn;
+        this.secondColumn = data.secondColumn;
+        this.thirdColumn = data.thirdColumn;
+      },
+    },
+    mounted() {
+      this.loadData();
+      this.checkMoveCard();
+    }
+  });
