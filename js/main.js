@@ -22,10 +22,12 @@ const storageModule = {
         this.$emit('update-progress');
         this.$emit('save-data');
       },
+
       deleteGroup() {
         this.$emit('delete-group', this.cardData.id);
         this.$emit('save-data');
       }
+      
     },
     template: `
       <div class="card">
@@ -69,6 +71,7 @@ const storageModule = {
     },
     methods: {
       ...storageModule,
+
         deleteGroup(groupId) {
           const indexFirst = this.firstColumn.findIndex(group => group.id === groupId);
           const indexSecond = this.secondColumn.findIndex(group => group.id === groupId);
@@ -81,6 +84,7 @@ const storageModule = {
           } else if (indexThird !== -1) {
             this.thirdColumn.splice(indexThird, 1);
           }
+
         },
       moveColumn(fromColumn, toColumn, progressThreshold, maxToColumnLength) {
         fromColumn.forEach(card => {
