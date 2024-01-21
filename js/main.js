@@ -54,4 +54,28 @@ Vue.component('card', {
         },
         deep: true
       }
-    },
+    }, 
+    methods: {
+        ...storageModule,
+          deleteGroup(groupId) {
+            const indexFirst = this.firstColumn.findIndex(group => group.id === groupId);
+            const indexSecond = this.secondColumn.findIndex(group => group.id === groupId);
+            const indexThird = this.thirdColumn.findIndex(group => group.id === groupId);
+    
+            if (indexFirst !== -1) {
+              this.firstColumn.splice(indexFirst, 1);
+            } else if (indexSecond !== -1) {
+              this.secondColumn.splice(indexSecond, 1);
+            } else if (indexThird !== -1) {
+              this.thirdColumn.splice(indexThird, 1);
+            }
+          },
+        moveColumn(fromColumn, toColumn, progressThreshold, maxToColumnLength) {
+          fromColumn.forEach(card => {
+            const progress = (card.items.filter(item => item.checked).length / card.items.length) * 100;
+            if (progress >= progressThreshold && toColumn.length < maxToColumnLength) {
+              toColumn.push(card);
+              fromColumn.splice(fromColumn.indexOf(card), 1);
+            }
+          });
+        },
