@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Заметки</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div id="app">
+    <div class="add-group">
+      <h2 class="add-g-caption">Добавить заметку</h2>
+  <input type="text" v-model="groupName" placeholder="Название">
+  <input placeholder="Пункт">
+  <button>Добавить</button>
+    </div>
+
+    <div class="columns">
+      <div class="column">
+        <h2>Список №1</h2>
+      </div>
+      <div class="column">
+        <h2>Список №2</h2>
+     
+      </div>
+      <div class="column">
+        <h2>Список №3</h2>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
