@@ -1,3 +1,14 @@
+const storageModule = {
+    storageKey: 'notes-app',
+    getData() {
+      const data = localStorage.getItem(this.storageKey);
+      return data ? JSON.parse(data) : { firstColumn: [], secondColumn: [], thirdColumn: [] };
+    },
+    saveData(data) {
+      localStorage.setItem(this.storageKey, JSON.stringify(data));
+    }
+  };
+
 Vue.component('card', {
     props: ['cardData', 'disableEdit'],
     methods: {
@@ -78,4 +89,15 @@ Vue.component('card', {
               fromColumn.splice(fromColumn.indexOf(card), 1);
             }
           });
+        }, loadData() {
+            const data = this.getData();
+            this.firstColumn = data.firstColumn;
+            this.secondColumn = data.secondColumn;
+            this.thirdColumn = data.thirdColumn;
+          },
         },
+        mounted() {
+          this.loadData();
+          this.checkMoveCard();
+        }
+      });
