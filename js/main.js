@@ -30,3 +30,28 @@ Vue.component('card', {
       </div>
     `
   });
+  new Vue({
+    el: '#app',
+    data: {
+      ...storageModule.getData(),
+      groupName: null,
+      inputs: [null, null, null, null, null], // Updated to have 5 elements
+      isFirstColumnBlocked: false,
+      columns: [
+        { title: 'Список №1', cards: [] },
+        { title: 'Список №2', cards: [] },
+        { title: 'Список №3', cards: [] }
+      ]
+    },
+    watch: {
+      columns: {
+        handler() {
+          this.saveData({
+            firstColumn: this.firstColumn,
+            secondColumn: this.secondColumn,
+            thirdColumn: this.thirdColumn
+          });
+        },
+        deep: true
+      }
+    },
