@@ -12,20 +12,22 @@
     <div class="add-group">
       <h2 class="add-g-caption">Добавить заметку</h2>
   <input type="text" v-model="groupName" placeholder="Название">
-  <input placeholder="Пункт">
-  <button>Добавить</button>
+  <input v-for="(input, index) in inputs" :key="index" type="text" v-model="inputs[index]" :placeholder="'Пункт ' + (index + 1)">
+  <button @click="addCard" :disabled="isFirstColumnBlocked">Добавить</button>
     </div>
 
     <div class="columns">
       <div class="column">
         <h2>Список №1</h2>
+        <card v-for="card in firstColumn" :key="card.id" :card-data="card" @update-progress="checkMoveCard" @delete-group="deleteGroup" :disable-edit="isFirstColumnBlocked"></card>
       </div>
       <div class="column">
         <h2>Список №2</h2>
-     
+        <card v-for="card in secondColumn" :key="card.id" :card-data="card" @update-progress="checkMoveCard" @delete-group="deleteGroup" :disable-edit="false"></card>
       </div>
       <div class="column">
         <h2>Список №3</h2>
+        <card v-for="card in thirdColumn" :key="card.id" :card-data="card" @update-progress="checkMoveCard" @delete-group="deleteGroup" :disable-edit="false"></card>
       </div>
     </div>
   </div>
