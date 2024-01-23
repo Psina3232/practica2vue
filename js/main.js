@@ -49,7 +49,9 @@ new Vue({
   data: {
     ...storageModule.getData(),
     groupName: null,
-    inputs: [null, null, null, null, null], // Updated to have 5 elements
+    inputs: [null, null, null, null, null],
+    inputsCount: 0,
+    nextStepValidation: false,
     isFirstColumnBlocked: false,
     columns: [
       { title: 'Список №1', cards: [] },
@@ -106,6 +108,18 @@ new Vue({
         this.moveColumn(this.firstColumn, this.secondColumn, 50, 5);
       }
     },
+
+    nextStep() {
+      const requiredFieldsFilled = this.groupName && this.inputs.slice(0, this.inputsCount).every(value => value !== null);
+  
+      if (this.inputsCount < 5 && requiredFieldsFilled) {
+        this.inputsCount++;
+        this.nextStepValidation = false; // Сброс значения при переходе к следующему шагу
+      } else {
+        this.nextStepValidation = true; // Установка значения true для отображения сообщения
+      }
+    },
+
     MoveSecondColm() {
       this.moveColumn(this.secondColumn, this.thirdColumn, 100, Infinity);
       this.MoveFirstColm();
@@ -114,20 +128,24 @@ new Vue({
       this.MoveFirstColm();
       this.MoveSecondColm();
     },
-    addCard() {
-      const nonNullInputs = this.inputs.filter(input => input !== null);
-      if (nonNullInputs.length >= 3 && nonNullInputs.length <= 5 && this.firstColumn.length < 3 && !this.isFirstColumnBlocked) {
+   
+  addCard() {
+    const nonNullInputs = this.inputs.filter(input => input !== null);
+    if (nonNullInputs.length >= 3 && nonNullInputs.length <= 5 && this.groupName && !this.isFirstColumnBlocked) {
+      if (this.firstColumn.length < 3) {
         this.firstColumn.push({ id: Date.now(), groupName: this.groupName, items: nonNullInputs.map(text => ({ text, checked: false })) });
+        this.groupName = null;
+        this.inputs = [null, null, null, null, null];
+        this.inputsCount = 0;
       }
-      this.groupName = null;
-      this.inputs = [null, null, null, null, null];
-      this.checkMoveCard();
-      this.saveData({
-        firstColumn: this.firstColumn,
-        secondColumn: this.secondColumn,
-        thirdColumn: this.thirdColumn
-      });
-    },
+    }
+    this.checkMoveCard();
+    this.saveData({
+      firstColumn: this.firstColumn,
+      secondColumn: this.secondColumn,
+      thirdColumn: this.thirdColumn
+    });
+  },
     loadData() {
       const data = this.getData();
       this.firstColumn = data.firstColumn;
