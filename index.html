@@ -9,12 +9,14 @@
 </head>
 <body>
   <div id="app">
-    <div class="add-group">
-      <h2 class="add-g-caption">Добавить заметку</h2>
-  <input type="text" v-model="groupName" placeholder="Название">
-  <input v-for="(input, index) in inputs" :key="index" type="text" v-model="inputs[index]" :placeholder="'Пункт ' + (index + 1)">
-  <button @click="addCard" :disabled="isFirstColumnBlocked">Добавить</button>
-    </div>
+    <form @submit.prevent="addCard">
+      <div class="add-group">
+        <h2 class="add-g-caption">Добавить заметку</h2>
+        <input type="text" v-model="groupName" placeholder="Название" required>
+        <input v-for="(input, index) in inputs" :key="index" type="text" v-model="inputs[index]" :placeholder="'Пункт ' + (index + 1)" :required="index < 3">
+        <button type="submit" :disabled="isFirstColumnBlocked">Добавить</button>
+      </div>
+    </form>
 
     <div class="columns">
       <div class="column">
