@@ -50,8 +50,6 @@ new Vue({
     ...storageModule.getData(),
     groupName: null,
     inputs: [null, null, null, null, null],
-    inputsCount: 0,
-    nextStepValidation: false,
     isFirstColumnBlocked: false,
     columns: [
       { title: 'Список №1', cards: [] },
@@ -106,17 +104,6 @@ new Vue({
       } else {
         this.isFirstColumnBlocked = false;
         this.moveColumn(this.firstColumn, this.secondColumn, 50, 5);
-      }
-    },
-
-    nextStep() {
-      const requiredFieldsFilled = this.groupName && this.inputs.slice(0, this.inputsCount).every(value => value !== null);
-  
-      if (this.inputsCount < 5 && requiredFieldsFilled) {
-        this.inputsCount++;
-        this.nextStepValidation = false; // Сброс значения при переходе к следующему шагу
-      } else {
-        this.nextStepValidation = true; // Установка значения true для отображения сообщения
       }
     },
 
