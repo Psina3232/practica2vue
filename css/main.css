@@ -75,4 +75,20 @@ button{
     height: 40px;
 }
 
+.green{
+    background-color: rgb(126, 255, 126);
+    border-radius: 5px;
+}
+
+.red{
+    background-color: rgb(255, 103, 103);
+    border-radius: 5px;
+}
+
+.blue{
+    background-color: rgb(102, 102, 255);
+    border-radius: 5px;
+}
+
+
 

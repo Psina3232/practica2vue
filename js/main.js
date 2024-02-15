@@ -36,20 +36,30 @@ Vue.component('card', {
       this.$emit('delete-group', this.cardData.id);
       this.$emit('save-data');
     }
-  },
+  }, computed: {
+    cardColor() {
+      const itemCount = this.cardData.items.length;
+      if (itemCount <= 3) {
+        return 'red'; // красный цвет для 3 и меньше пунктов
+      } else if (itemCount === 4) {
+        return 'blue'; // синий цвет для 4 пунктов
+      } else if (itemCount >= 5) {
+        return 'green'; // зеленый цвет для 5 и больше пунктов
+      }
+    }},
   // HTML-шаблон компонента
   template: `
-    <div class="card">
-      <h3>{{ cardData.groupName }}</h3>
-      <ul>
-        <li v-for="item in cardData.items" :key="item.text">
-          <input type="checkbox" v-model="item.checked" @change="updateProgress" :disabled="cardData.isComplete || disableEdit">
-          {{ item.text }}
-        </li>
-      </ul>
-      <p v-if="cardData.isComplete">100% выполнено! Дата и время: {{ cardData.lastChecked }}</p>
-      <button class="btn" v-if="cardData.isComplete" @click="deleteGroup" :disabled="disableEdit">Удалить</button>
-    </div>
+  <div class="card" :class="cardColor">
+  <h3>{{ cardData.groupName }}</h3>
+  <ul>
+    <li v-for="item in cardData.items" :key="item.text">
+      <input type="checkbox" v-model="item.checked" @change="updateProgress" :disabled="cardData.isComplete || disableEdit">
+      {{ item.text }}
+    </li>
+  </ul>
+  <p v-if="cardData.isComplete">100% выполнено! Дата и время: {{ cardData.lastChecked }}</p>
+  <button class="btn" v-if="cardData.isComplete" @click="deleteGroup" :disabled="disableEdit">Удалить</button>
+</div>
   `
 });
 
