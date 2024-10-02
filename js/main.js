@@ -83,29 +83,33 @@ new Vue({
   computed: {
     // Вычисляемое свойство для проверки, нужно ли поле required
     isInputRequired() {
-      // Подсчитываем количество заполненных полей
       const nonEmptyInputs = this.inputs.filter(input => input !== null && input !== '');
-      // Возвращаем true для required, если заполнено меньше 3 полей
       return nonEmptyInputs.length < 3;
+    },
+    // Вычисляемое свойство для отображения сообщения с количеством оставшихся полей
+    remainingInputsMessage() {
+      const nonEmptyInputs = this.inputs.filter(input => input !== null && input !== '');
+      const remaining = 3 - nonEmptyInputs.length;
+
+      if (remaining > 0) {
+        return `Заполните ещё ${remaining} ${this.pluralize(remaining, ['пункт', 'пункта', 'пунктов'])}`;
+      } else {
+        return null; // Не выводим сообщение, если все необходимые поля заполнены
+      }
     }
   },
-  // Наблюдатель за изменениями в столбцах для автоматического сохранения данных
-  watch: {
-    columns: {
-      handler() {
-        this.saveData({
-          firstColumn: this.firstColumn,
-          secondColumn: this.secondColumn,
-          thirdColumn: this.thirdColumn
-        });
-      },
-      deep: true
-    }
-  },
-  // Методы Vue-экземпляра, включая методы из модуля storageModule
   methods: {
     ...storageModule,
-    // Метод для удаления группы карточек по идентификатору
+    // Метод для склонения слова "пункт"
+    pluralize(number, forms) {
+      if (number % 10 === 1 && number % 100 !== 11) {
+        return forms[0]; // пункт
+      } else if (number % 10 >= 2 && number % 10 <= 4 && (number % 100 < 10 || number % 100 >= 20)) {
+        return forms[1]; // пункта
+      } else {
+        return forms[2]; // пунктов
+      }
+    },
     deleteGroup(groupId) {
       const indexFirst = this.firstColumn.findIndex(group => group.id === groupId);
       const indexSecond = this.secondColumn.findIndex(group => group.id === groupId);
@@ -119,7 +123,6 @@ new Vue({
         this.thirdColumn.splice(indexThird, 1);
       }
     },
-    // Метод для перемещения карточек между столбцами с учетом прогресса
     moveColumn(fromColumn, toColumn, progressThreshold, maxToColumnLength) {
       fromColumn.forEach(card => {
         const progress = (card.items.filter(item => item.checked).length / card.items.length) * 100;
@@ -129,7 +132,6 @@ new Vue({
         }
       });
     },
-    // Метод для перемещения карточек из первого столбца во второй
     MoveFirstColm() {
       if (this.secondColumn.length === 5 && this.firstColumn.some(card => {
         const progress = (card.items.filter(item => item.checked).length / card.items.length) * 100;
@@ -141,17 +143,14 @@ new Vue({
         this.moveColumn(this.firstColumn, this.secondColumn, 50, 5);
       }
     },
-    // Метод для перемещения карточек из второго столбца в третий
     MoveSecondColm() {
       this.moveColumn(this.secondColumn, this.thirdColumn, 100, Infinity);
       this.MoveFirstColm();
     },
-    // Метод для проверки и выполнения перемещения карточек
     checkMoveCard() {
       this.MoveFirstColm();
       this.MoveSecondColm();
     },
-    // Метод для добавления новой карточки с группой
     addCard() {
       const nonNullInputs = this.inputs.filter(input => input !== null);
       if (nonNullInputs.length >= 3 && nonNullInputs.length <= 5 && this.groupName && !this.isFirstColumnBlocked) {
@@ -161,16 +160,13 @@ new Vue({
           this.inputs = [null, null, null, null, null];
         }
       }
-      // Проверка и выполнение перемещения карточек
       this.checkMoveCard();
-      // Сохранение данных после добавления карточки
       this.saveData({
         firstColumn: this.firstColumn,
         secondColumn: this.secondColumn,
         thirdColumn: this.thirdColumn
       });
     },
-    // Метод для загрузки данных из локального хранилища
     loadData() {
       const data = this.getData();
       this.firstColumn = data.firstColumn;
@@ -178,7 +174,6 @@ new Vue({
       this.thirdColumn = data.thirdColumn;
     },
   },
-  // Логика, выполняемая после монтажа Vue-экземпляра
   mounted() {
     this.loadData();
     this.checkMoveCard();
