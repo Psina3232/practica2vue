@@ -13,7 +13,7 @@
       <div class="add-group">
         <h2 class="add-g-caption">Добавить заметку</h2>
         <input type="text" v-model="groupName" placeholder="Название" required>
-        <input v-for="(input, index) in inputs" :key="index" type="text" v-model="inputs[index]" :placeholder="'Пункт ' + (index + 1)">
+        <input v-for="(input, index) in inputs" :key="index" type="text" v-model="inputs[index]" :placeholder="'Пункт ' + (index + 1)"   :required="isInputRequired">
         <button type="submit" :disabled="isFirstColumnBlocked">Добавить</button>
       </div>
     </form>

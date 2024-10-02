@@ -79,6 +79,16 @@ new Vue({
       { title: 'Список №3', cards: [] }
     ]
   },
+  // Вычисляемые свойства Vue-экземпляра
+  computed: {
+    // Вычисляемое свойство для проверки, нужно ли поле required
+    isInputRequired() {
+      // Подсчитываем количество заполненных полей
+      const nonEmptyInputs = this.inputs.filter(input => input !== null && input !== '');
+      // Возвращаем true для required, если заполнено меньше 3 полей
+      return nonEmptyInputs.length < 3;
+    }
+  },
   // Наблюдатель за изменениями в столбцах для автоматического сохранения данных
   watch: {
     columns: {
