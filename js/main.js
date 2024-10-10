@@ -71,7 +71,8 @@ new Vue({
   data: {
     ...storageModule.getData(),
     groupName: null,
-    inputs: [null, null, null, null, null],
+    inputs: [null, null, null],
+    showAdditionalInputs: false,
     isFirstColumnBlocked: false,
     columns: [
       { title: 'Список №1', cards: [] },
@@ -79,37 +80,50 @@ new Vue({
       { title: 'Список №3', cards: [] }
     ]
   },
-  // Вычисляемые свойства Vue-экземпляра
+
   computed: {
-    // Вычисляемое свойство для проверки, нужно ли поле required
+
     isInputRequired() {
       const nonEmptyInputs = this.inputs.filter(input => input !== null && input !== '');
       return nonEmptyInputs.length < 3;
     },
-    // Вычисляемое свойство для отображения сообщения с количеством оставшихся полей
+
     remainingInputsMessage() {
       const nonEmptyInputs = this.inputs.filter(input => input !== null && input !== '');
       const remaining = 3 - nonEmptyInputs.length;
 
       if (remaining > 0) {
-        return `Заполните ещё ${remaining} ${this.pluralize(remaining, ['пункт', 'пункта', 'пунктов'])}`;
+        return `Заполните ещё минимум ${remaining} ${this.pluralize(remaining, ['пункт', 'пункта', 'пунктов'])}`;
       } else {
-        return null; // Не выводим сообщение, если все необходимые поля заполнены
+        return null;
       }
     }
   },
   methods: {
     ...storageModule,
-    // Метод для склонения слова "пункт"
+
     pluralize(number, forms) {
       if (number % 10 === 1 && number % 100 !== 11) {
-        return forms[0]; // пункт
+        return forms[0];
       } else if (number % 10 >= 2 && number % 10 <= 4 && (number % 100 < 10 || number % 100 >= 20)) {
-        return forms[1]; // пункта
+        return forms[1];
       } else {
-        return forms[2]; // пунктов
+        return forms[2];
       }
     },
+
+    addExtraInput() {
+      if (this.inputs.length < 5) {
+        this.inputs.push(null);
+      }
+    },
+
+    removeExtraInput() {
+      if (this.inputs.length > 3) {
+        this.inputs.pop();
+      }
+    },
+
     deleteGroup(groupId) {
       const indexFirst = this.firstColumn.findIndex(group => group.id === groupId);
       const indexSecond = this.secondColumn.findIndex(group => group.id === groupId);
@@ -123,6 +137,7 @@ new Vue({
         this.thirdColumn.splice(indexThird, 1);
       }
     },
+
     moveColumn(fromColumn, toColumn, progressThreshold, maxToColumnLength) {
       fromColumn.forEach(card => {
         const progress = (card.items.filter(item => item.checked).length / card.items.length) * 100;
@@ -132,6 +147,7 @@ new Vue({
         }
       });
     },
+
     MoveFirstColm() {
       if (this.secondColumn.length === 5 && this.firstColumn.some(card => {
         const progress = (card.items.filter(item => item.checked).length / card.items.length) * 100;

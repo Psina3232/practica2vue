@@ -14,18 +14,22 @@
         <h2 class="add-g-caption">Добавить заметку</h2>
         <input type="text" v-model="groupName" placeholder="Название" required>
         
-        <!-- Вывод сообщения о заполнении оставшихся пунктов -->
         <p v-if="remainingInputsMessage">{{ remainingInputsMessage }}</p>
         
         <input v-for="(input, index) in inputs" :key="index" type="text" v-model="inputs[index]" :placeholder="'Пункт ' + (index + 1)">
         
-        <button type="submit" :disabled="isFirstColumnBlocked">Добавить</button>
+        <div v-if="inputs.length < 5">
+          <button type="button" @click="addExtraInput" class="add-button">+</button>
+        </div>
+  
+        <div v-if="inputs.length > 3">
+          <button type="button" @click="removeExtraInput" class="add-button">-</button>
+        </div>
+  
+        <button type="submit" :disabled="isFirstColumnBlocked" class="add-button">Добавить</button>
       </div>
     </form>
-  </div>
   
-    </form>
-
     <div class="columns">
       <div class="column">
         <h2>Список №1</h2>
@@ -41,6 +45,7 @@
       </div>
     </div>
   </div>
+  
 
   <script src="js/main.js"></script>
 </body>
